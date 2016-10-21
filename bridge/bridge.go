@@ -325,6 +325,23 @@ func (b *Bridge) newService(port ServicePort, isgroup, quiet, ipv6 bool) *Servic
 		log.Println("service:", service.ID, "is named", service.Name, "and is on", service.IP, "port", service.Port)
 	}
 
+	if b.config.UseIpFromLabel != "" {
+		containerIp := container.Config.Labels[b.config.UseIpFromLabel]
+		if containerIp != "" {
+			slashIndex := strings.LastIndex(containerIp, "/")
+			if slashIndex > -1 {
+				service.IP = containerIp[:slashIndex]
+			} else {
+				service.IP = containerIp
+			}
+			log.Println("using container IP " + service.IP + " from label '" +
+				b.config.UseIpFromLabel  + "'")
+		} else {
+			log.Println("Label '" + b.config.UseIpFromLabel +
+				"' not found in container configuration")
+		}
+	}
+
 	if port.PortType == "udp" {
 		service.Tags = combineTags(
 			mapDefault(metadata, "tags", ""), b.config.ForceTags, "udp")

@@ -24,6 +24,7 @@ type Config struct {
 	Internal        bool
 	IPv4            bool
 	IPv6            bool
+	UseIpFromLabel  string
 	ForceTags       string
 	RefreshTtl      int
 	RefreshInterval int
