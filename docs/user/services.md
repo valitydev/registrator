@@ -148,6 +148,7 @@ port-specific key (`SERVICE_<port>_<key>`) or the global key
 1. `SERVICE_<key>_(IPV4|IPV6)`
 1. `SERVICE_<key>`
 
+It is also possible to disable IPv4 addresses registration at all by setting `-ipv4=false` (set to `true` by default).
 
 ## Examples
 
