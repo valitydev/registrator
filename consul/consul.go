@@ -3,6 +3,7 @@ package consul
 import (
 	"fmt"
 	"log"
+	"net"
 	"net/url"
 	"strings"
 	"strconv"
@@ -88,17 +89,22 @@ func (r *ConsulAdapter) Register(service *bridge.Service) error {
 }
 
 func (r *ConsulAdapter) buildCheck(service *bridge.Service) *consulapi.AgentServiceCheck {
+	serviceip := service.IP
+	// Format IPv6 for the check.
+	if net.ParseIP(serviceip).To4() == nil {
+		serviceip = fmt.Sprintf("[%s]", serviceip)
+	}
 	check := new(consulapi.AgentServiceCheck)
 	if status := service.Attrs["check_initial_status"]; status != "" {
 		check.Status = status
 	}
 	if path := service.Attrs["check_http"]; path != "" {
-		check.HTTP = fmt.Sprintf("http://%s:%d%s", service.IP, service.Port, path)
+		check.HTTP = fmt.Sprintf("http://%s:%d%s", serviceip, service.Port, path)
 		if timeout := service.Attrs["check_timeout"]; timeout != "" {
 			check.Timeout = timeout
 		}
 	} else if path := service.Attrs["check_https"]; path != "" {
-		check.HTTP = fmt.Sprintf("https://%s:%d%s", service.IP, service.Port, path)
+		check.HTTP = fmt.Sprintf("https://%s:%d%s", serviceip, service.Port, path)
 		if timeout := service.Attrs["check_timeout"]; timeout != "" {
 			check.Timeout = timeout
 		}
@@ -109,7 +115,7 @@ func (r *ConsulAdapter) buildCheck(service *bridge.Service) *consulapi.AgentServ
 	} else if ttl := service.Attrs["check_ttl"]; ttl != "" {
 		check.TTL = ttl
 	} else if tcp := service.Attrs["check_tcp"]; tcp != "" {
-		check.TCP = fmt.Sprintf("%s:%d", service.IP, service.Port)
+		check.TCP = fmt.Sprintf("%s:%d", serviceip, service.Port)
 		if timeout := service.Attrs["check_timeout"]; timeout != "" {
 			check.Timeout = timeout
 		}
