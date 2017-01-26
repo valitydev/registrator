@@ -3,9 +3,9 @@
 Service registry bridge for Docker.
 
 [![Circle CI](https://circleci.com/gh/gliderlabs/registrator.png?style=shield)](https://circleci.com/gh/gliderlabs/registrator)
+[![Build Status](http://ci.rbkmoney.com/buildStatus/icon?job=rbkmoney_private/registrator/master)](http://ci.rbkmoney.com/job/rbkmoney_private/job/registrator/job/master/)
 [![Docker pulls](https://img.shields.io/docker/pulls/gliderlabs/registrator.svg)](https://hub.docker.com/r/gliderlabs/registrator/)
 [![IRC Channel](https://img.shields.io/badge/irc-%23gliderlabs-blue.svg)](https://kiwiirc.com/client/irc.freenode.net/#gliderlabs)
-[![Build Status](http://ci.rbkmoney.com/buildStatus/icon?job=rbkmoney_private/registrator/master)](http://ci.rbkmoney.com/job/rbkmoney_private/job/registrator/job/master/)
 <br /><br />
 
 Registrator automatically registers and deregisters services for any Docker
