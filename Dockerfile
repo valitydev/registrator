@@ -1,13 +1,17 @@
-FROM gliderlabs/alpine:edge
-ENTRYPOINT ["/bin/registrator"]
-
+FROM alpine:3.7 AS builder
 COPY . /go/src/github.com/gliderlabs/registrator
-RUN apk-install -t build-deps build-base go git mercurial \
-	&& export GOPATH=/go \
-	&& cd /go/src/github.com/gliderlabs/registrator \
-	&& go get -v ./... \
-	&& go get github.com/stretchr/testify/assert \
-	&& go test -v ./... \
-	&& go build -ldflags "-X main.Version=$(cat VERSION)" -o /bin/registrator \
-	&& rm -rf /go \
-	&& apk del --purge build-deps
+RUN export GOPATH="/go" PATH="${PATH}:/go/bin" \
+    && apk --no-cache add -t build-deps build-base go git curl \
+    && apk --no-cache add ca-certificates \
+    && mkdir -p /go/bin \
+    && curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+RUN export GOPATH="/go" PATH="${PATH}:/go/bin" \
+     && cd /go/src/github.com/gliderlabs/registrator \
+     && git config --global http.https://gopkg.in.followRedirects true \
+     && dep ensure \
+     && go build -v -ldflags "-X main.Version=$(cat VERSION)" -o /bin/registrator
+
+FROM dr.rbkmoney.com/rbkmoney/embedded-base:6edae32c882e63735af15b5e37c2bca0c5918484
+COPY --from=builder /bin/registrator /bin/registrator
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+ENTRYPOINT ["/bin/registrator"]
