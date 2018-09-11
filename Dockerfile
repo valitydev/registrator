@@ -11,7 +11,7 @@ RUN export GOPATH="/go" PATH="${PATH}:/go/bin" \
      && dep ensure \
      && go build -v -ldflags "-X main.Version=$(cat VERSION)" -o /bin/registrator
 
-FROM dr.rbkmoney.com/rbkmoney/embedded-base:6edae32c882e63735af15b5e37c2bca0c5918484
+FROM alpine:3.7
 COPY --from=builder /bin/registrator /bin/registrator
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 ENTRYPOINT ["/bin/registrator"]
